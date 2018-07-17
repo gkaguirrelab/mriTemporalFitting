@@ -31,7 +31,7 @@ stimulusStruct.values=zeros(xSize,ySize,nTimeSamples);
 
 % Have a stimulus bar drift upwards over the time
 for tt = 1:nTimeSamples
-    xPos = mod(tt,xSize);
+    xPos = mod(tt,xSize)+1;
     stimulusStruct.values(xPos,:,tt)=1;
 end
 
@@ -40,7 +40,6 @@ hrfParams.gamma1 = 6;   % positive gamma parameter (roughly, time-to-peak in sec
 hrfParams.gamma2 = 12;  % negative gamma parameter (roughly, time-to-peak in secs)
 hrfParams.gammaScale = 10; % scaling factor between the positive and negative gamma componenets
 
-deltaT = 3000; % in msecs
 kernelStruct.timebase = linspace(0,totalTime-deltaT,totalTime/deltaT);
 
 % The timebase is converted to seconds within the function, as the gamma
@@ -68,9 +67,9 @@ thePacket.stimulus.metaData.stimLabels=['demo'];
 
 % Create some params to define the simulated data for this packet
 paramsLocal=params0;
-paramsLocal.paramMainMatrix(1,1)=1;
-paramsLocal.paramMainMatrix(1,2)=4; % xPos
-paramsLocal.paramMainMatrix(1,3)=5; % yPos
+paramsLocal.paramMainMatrix(1,1)=2; % xPos
+paramsLocal.paramMainMatrix(1,2)=5; % yPos
+paramsLocal.paramMainMatrix(1,3)=3; % amplitude
 
 %% Report the modeled params
 fprintf('Simulated model parameters:\n');

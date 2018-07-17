@@ -12,17 +12,19 @@ function [modelResponseStruct] = forwardModelRPRF(obj,params,stimulusStruct, hrf
 
 xPos=params.paramMainMatrix(:,strcmp(params.paramNameCell,'xPos'));
 yPos=params.paramMainMatrix(:,strcmp(params.paramNameCell,'yPos'));
-
+amplitude=params.paramMainMatrix(:,strcmp(params.paramNameCell,'amplitude'));
 
 % Obtain the temporal profile of the stimulus at the x, y location
     modelResponseStruct.timebase=stimulusStruct.timebase;
-    modelResponseStruct.values=squeeze(stimulusStruct.values(xPos,yPos,:));
+    modelResponseStruct.values=squeeze(stimulusStruct.values(xPos,yPos,:))';
 
     % Convolve the stimulus by the hrf kernel
     modelResponseStruct=obj.applyKernel(modelResponseStruct,hrfKernelStruct);
 
-    % make the response have unit amplitude
-    modelResponseStruct.values=yBOLDStruct.values./max(yBOLDStruct.values);
+    % Make the response have unit amplitude
+    modelResponseStruct.values=modelResponseStruct.values./max(modelResponseStruct.values);
 
+    % Scale by the amplitude parameter
+    modelResponseStruct.values=modelResponseStruct.values.*amplitude;
 
 end
