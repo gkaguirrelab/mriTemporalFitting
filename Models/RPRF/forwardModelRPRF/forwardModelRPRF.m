@@ -12,6 +12,7 @@ function [modelResponseStruct] = forwardModelRPRF(obj,params,stimulusStruct, hrf
 
 xPos=params.paramMainMatrix(:,strcmp(params.paramNameCell,'xPos'));
 yPos=params.paramMainMatrix(:,strcmp(params.paramNameCell,'yPos'));
+sigmaSize = 1;
 amplitude=params.paramMainMatrix(:,strcmp(params.paramNameCell,'amplitude'));
 
 % Obtain the temporal profile of the stimulus at the x, y location
