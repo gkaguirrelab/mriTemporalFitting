@@ -54,7 +54,6 @@ kernelStruct=normalizeKernelArea(kernelStruct);
 
 % Get the default forward model parameters
 params0 = tfeHandle.defaultParams('defaultParamsInfo', defaultParamsInfo);
-params0.noiseSd = 0.01;
 
 % start the packet assembly
 thePacket.stimulus = stimulusStruct;
@@ -67,6 +66,8 @@ thePacket.stimulus.metaData.stimLabels=['demo'];
 
 % Create some params to define the simulated data for this packet
 paramsLocal=params0;
+paramsLocal.noiseSd=0.5; % stdev of noise
+paramsLocal.noiseInverseFrequencyPower=1; % pink noise
 paramsLocal.paramMainMatrix(1,1)=2; % xPos
 paramsLocal.paramMainMatrix(1,2)=5; % yPos
 paramsLocal.paramMainMatrix(1,3)=3; % amplitude
