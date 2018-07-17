@@ -38,14 +38,13 @@ if ~isempty(p.Results.errorWeightVector)
     end
 end
 
-
 %% Convert parameters to vector form
 params = obj.vecToParams(paramsVec);
 
 %% Compute the fit based on the timebase of the stimulus
 modelResponseStruct = obj.computeResponse(params,thePacket.stimulus,thePacket.kernel,varargin{:});
 
-%% Downsample to computed response to timebase of the response
+%% Downsample computed response to timebase of the response
 modelResponseStruct = obj.resampleTimebase(modelResponseStruct,thePacket.response.timebase,varargin{:});
 
 %% Get fit error measurement
