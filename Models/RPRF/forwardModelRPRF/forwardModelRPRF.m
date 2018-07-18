@@ -43,4 +43,9 @@ modelResponseStruct.values=modelResponseStruct.values./max(modelResponseStruct.v
 % Scale by the amplitude parameter
 modelResponseStruct.values=modelResponseStruct.values.*amplitude;
 
+% Mean center
+modelResponseStruct.values=modelResponseStruct.values - ...
+    mean(modelResponseStruct.values);
+
+
 end
