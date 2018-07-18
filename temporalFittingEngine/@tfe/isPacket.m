@@ -75,9 +75,13 @@ if ~(length(thePacket.response.values)==length(thePacket.response.timebase))
 end
 
 % Check that the second dimension of values and timebase are the same
-%  length for the stimulus
-if ~(size(thePacket.stimulus.values,2)==length(thePacket.stimulus.timebase))
-    warning('response.timebase is not equal in length to response.values')
+% length for the stimulus. We hold the size of the stimulus.values field in
+% a temp variable so we can check the last dimension of the stimulus.values
+% against the timebase. This is because the stimulus could be
+% multi-dimensional (e.g. a movie, with the last dimension being time).
+tmpSize = size(thePacket.stimulus.values);
+if ~(tmpSize(end)==length(thePacket.stimulus.timebase))
+    warning('stimulus.timebase is not equal in length to stimulus.values')
     packetValidity = false;
 end
 
