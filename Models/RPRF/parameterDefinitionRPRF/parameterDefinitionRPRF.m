@@ -27,14 +27,16 @@ p.parse(nInstances,varargin{:});
 paramStruct.paramNameCell = { ...
     'xPos',...
     'yPos',...
+    'sigmaSize',...
     'amplitude',...
     };
 
 % initial values
 if isempty(p.Results.initialValues)
-    paramStruct.paramMainMatrix(:,1) = 1.0.*ones([nInstances 1]);
-    paramStruct.paramMainMatrix(:,2) = 1.0.*ones([nInstances 1]);
+    paramStruct.paramMainMatrix(:,1) = 5.0.*ones([nInstances 1]);
+    paramStruct.paramMainMatrix(:,2) = 5.0.*ones([nInstances 1]);
     paramStruct.paramMainMatrix(:,3) = 1.0.*ones([nInstances 1]);
+    paramStruct.paramMainMatrix(:,4) = 1.0.*ones([nInstances 1]);
 else % use passed initial values
     for ii=1:length(paramStruct.paramNameCell)
         paramStruct.paramMainMatrix(:,ii) = p.Results.initialValues(ii).*ones([nInstances 1]);
@@ -45,7 +47,8 @@ end
 if isempty(p.Results.vlb)
     paramStruct.vlb(:,1) = repmat(1,[nInstances 1]);
     paramStruct.vlb(:,2) = repmat(1,[nInstances 1]);
-    paramStruct.vlb(:,3) = repmat(0,[nInstances 1]);
+    paramStruct.vlb(:,3) = repmat(.1,[nInstances 1]);
+    paramStruct.vlb(:,4) = repmat(0,[nInstances 1]);
 else % used passed lower bounds
     for ii=1:length(paramStruct.paramNameCell)
         paramStruct.vlb(:,ii) = p.Results.vlb(ii).*ones([nInstances 1]);
@@ -56,7 +59,8 @@ end
 if isempty(p.Results.vub)
     paramStruct.vub(:,1) = repmat(10,[nInstances 1]);
     paramStruct.vub(:,2) = repmat(10,[nInstances 1]);
-    paramStruct.vub(:,3) = repmat(10,[nInstances 1]);
+    paramStruct.vub(:,3) = repmat(3,[nInstances 1]);
+    paramStruct.vub(:,4) = repmat(10,[nInstances 1]);
 else % used passed upper bounds
     for ii=1:length(paramStruct.paramNameCell)
         paramStruct.vub(:,ii) = p.Results.vub(ii).*ones([nInstances 1]);

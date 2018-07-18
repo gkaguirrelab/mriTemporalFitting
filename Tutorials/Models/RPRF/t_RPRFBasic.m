@@ -66,11 +66,12 @@ thePacket.stimulus.metaData.stimLabels=['demo'];
 
 % Create some params to define the simulated data for this packet
 paramsLocal=params0;
-paramsLocal.noiseSd=0.0001; % stdev of noise
+paramsLocal.noiseSd=.1; % stdev of noise
 paramsLocal.noiseInverseFrequencyPower=1; % pink noise
 paramsLocal.paramMainMatrix(1,1)=7; % xPos
 paramsLocal.paramMainMatrix(1,2)=5; % yPos
-paramsLocal.paramMainMatrix(1,3)=3; % amplitude
+paramsLocal.paramMainMatrix(1,3)=1.5; % sigmaSize
+paramsLocal.paramMainMatrix(1,4)=1; % amplitude
 
 %% Report the modeled params
 fprintf('Simulated model parameters:\n');
@@ -86,32 +87,28 @@ thePacket.response=simulatedResponseStruct;
 if p.Results.generatePlots
     tfeHandle.plot(simulatedResponseStruct,'DisplayName','Simulated');
 end
-% 
-% 
-% %% Test the fitter
-% % The RPRF model requires a diff min change, as the duration parameter is
-% % discretized to have effects in units of msecs. Failure to do so will
-% % lead fmincon to believe that changes in the duration parameter have no
-% % effect upon the model fit.
-% [paramsFit,fVal,modelResponseStruct] = ...
-%     tfeHandle.fitResponse(thePacket,...
-%     'defaultParamsInfo', defaultParamsInfo);
-% 
-% %% Report the output
-% fprintf('Model parameter from fits:\n');
-% tfeHandle.paramPrint(paramsFit);
-% fprintf('\n');
-% 
-% if p.Results.generatePlots
-%     tfeHandle.plot(modelResponseStruct,'Color',[0 1 0],'NewWindow',false,'DisplayName','model fit');
-%     legend('show');legend('boxoff');
-% end
-% 
-% %% Set returned validationData structure
-% if (nargout > 0)
-%     validationData.params1 = paramsFit;
-%     validationData.modelResponseStruct = modelResponseStruct;
-%     validationData.thePacket = thePacket;
-% end
+
+
+%% Test the fitter
+[paramsFit,fVal,modelResponseStruct] = ...
+    tfeHandle.fitResponse(thePacket,...
+    'defaultParamsInfo', defaultParamsInfo);
+
+%% Report the output
+fprintf('Model parameter from fits:\n');
+tfeHandle.paramPrint(paramsFit);
+fprintf('\n');
+
+if p.Results.generatePlots
+    tfeHandle.plot(modelResponseStruct,'Color',[0 1 0],'NewWindow',false,'DisplayName','model fit');
+    legend('show');legend('boxoff');
+end
+
+%% Set returned validationData structure
+if (nargout > 0)
+    validationData.params1 = paramsFit;
+    validationData.modelResponseStruct = modelResponseStruct;
+    validationData.thePacket = thePacket;
+end
 
 end % function

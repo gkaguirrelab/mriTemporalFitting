@@ -12,20 +12,35 @@ function [modelResponseStruct] = forwardModelRPRF(obj,params,stimulusStruct, hrf
 
 xPos=params.paramMainMatrix(:,strcmp(params.paramNameCell,'xPos'));
 yPos=params.paramMainMatrix(:,strcmp(params.paramNameCell,'yPos'));
-sigmaSize = 1;
+sigmaSize=params.paramMainMatrix(:,strcmp(params.paramNameCell,'sigmaSize'));
 amplitude=params.paramMainMatrix(:,strcmp(params.paramNameCell,'amplitude'));
 
-% Obtain the temporal profile of the stimulus at the x, y location
-    modelResponseStruct.timebase=stimulusStruct.timebase;
-    modelResponseStruct.values=squeeze(stimulusStruct.values(xPos,yPos,:))';
+% Derive some parameters of the stimulus movie
+xSize = size(stimulusStruct.values,1);
+ySize = size(stimulusStruct.values,2);
+nSamples = size(stimulusStruct.values,3);
 
-    % Convolve the stimulus by the hrf kernel
-    modelResponseStruct=obj.applyKernel(modelResponseStruct,hrfKernelStruct);
+% Pre-allocate the modelResponseStruct
+modelResponseStruct.timebase=stimulusStruct.timebase;
+modelResponseStruct.values=zeros(1,nSamples);
 
-    % Make the response have unit amplitude
-    modelResponseStruct.values=modelResponseStruct.values./max(modelResponseStruct.values);
+% Create a Gaussian kernel
+[meshX , meshY] = meshgrid(1:ySize,1:xSize);
+f = exp (-((meshY-xPos).^2 + (meshX-yPos).^2) ./ (2*sigmaSize.^2));
 
-    % Scale by the amplitude parameter
-    modelResponseStruct.values=modelResponseStruct.values.*amplitude;
+% Obtain the Gaussian weighted response at each timepoint
+for i =1:nSamples
+    S = stimulusStruct.values(:,:,i).*f;
+    modelResponseStruct.values(i) = sum(S(:));
+end
+
+% Convolve the response by the hrf kernel
+modelResponseStruct=obj.applyKernel(modelResponseStruct,hrfKernelStruct);
+
+% Set the response to unit amplitude
+modelResponseStruct.values=modelResponseStruct.values./max(modelResponseStruct.values);
+
+% Scale by the amplitude parameter
+modelResponseStruct.values=modelResponseStruct.values.*amplitude;
 
 end
