@@ -17,23 +17,17 @@ p.parse(varargin{:});
 tfeHandle = tfeRPRF('verbosity','none');
 
 %% Spatial and Temporal definition of the stimulus
-deltaT = 3000; % in msecs
-totalTime = 300000; % in msecs
-xSize = 10;
-ySize = 10;
-stimulusStruct.timebase = linspace(0,totalTime-deltaT,totalTime/deltaT);
-nTimeSamples = size(stimulusStruct.timebase,2);
+deltaT = 800; % in msecs
+totalTime = 336*1000; % in msecs
+
+%% Load an example stimulus file
+stimulusFileName = fullfile(fileparts(mfilename('fullpath')),'pRFpacket_10x10.mat');
+load(stimulusFileName);
+stimulusStruct = stimulus;
 
 % Create a stimulus movie (xSize x ySize x time)
 nInstances=1;
 defaultParamsInfo.nInstances=nInstances;
-stimulusStruct.values=zeros(xSize,ySize,nTimeSamples);
-
-% Have a stimulus bar drift upwards over the time
-for tt = 1:nTimeSamples
-    xPos = mod(tt,xSize)+1;
-    stimulusStruct.values(xPos,:,tt)=1;
-end
 
 %% Define a kernelStruct. In this case, a double gamma HRF
 hrfParams.gamma1 = 6;   % positive gamma parameter (roughly, time-to-peak in secs)
@@ -66,12 +60,13 @@ thePacket.stimulus.metaData.stimLabels=['demo'];
 
 % Create some params to define the simulated data for this packet
 paramsLocal=params0;
-paramsLocal.noiseSd=.1; % stdev of noise
+paramsLocal.noiseSd=0; % stdev of noise
 paramsLocal.noiseInverseFrequencyPower=1; % pink noise
 paramsLocal.paramMainMatrix(1,1)=7; % xPos
 paramsLocal.paramMainMatrix(1,2)=5; % yPos
 paramsLocal.paramMainMatrix(1,3)=1.5; % sigmaSize
 paramsLocal.paramMainMatrix(1,4)=1; % amplitude
+paramsLocal.paramMainMatrix(1,5)=0.5; % temporal offset of the hrf
 
 %% Report the modeled params
 fprintf('Simulated model parameters:\n');

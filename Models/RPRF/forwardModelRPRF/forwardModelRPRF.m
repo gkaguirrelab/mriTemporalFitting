@@ -14,6 +14,7 @@ xPos=params.paramMainMatrix(:,strcmp(params.paramNameCell,'xPos'));
 yPos=params.paramMainMatrix(:,strcmp(params.paramNameCell,'yPos'));
 sigmaSize=params.paramMainMatrix(:,strcmp(params.paramNameCell,'sigmaSize'));
 amplitude=params.paramMainMatrix(:,strcmp(params.paramNameCell,'amplitude'));
+temporalShift=params.paramMainMatrix(:,strcmp(params.paramNameCell,'temporalShift'));
 
 % Derive some parameters of the stimulus movie
 xSize = size(stimulusStruct.values,1);
@@ -34,14 +35,22 @@ for i =1:nSamples
     modelResponseStruct.values(i) = sum(S(:));
 end
 
-% Convolve the response by the hrf kernel
-modelResponseStruct=obj.applyKernel(modelResponseStruct,hrfKernelStruct);
-
 % Set the response to unit amplitude
 modelResponseStruct.values=modelResponseStruct.values./max(modelResponseStruct.values);
 
 % Scale by the amplitude parameter
 modelResponseStruct.values=modelResponseStruct.values.*amplitude;
+
+% Set the initial value to zero
+modelResponseStruct.values = modelResponseStruct.values-modelResponseStruct.values(1);
+
+% Shift the hrf kernel by temporalShiftparameter (which is in seconds)
+tmpDiff = diff(hrfKernelStruct.timebase);
+shiftInSamples = temporalShift*1000/tmpDiff(1);
+hrfKernelStruct.values = fshift(hrfKernelStruct.values,shiftInSamples);
+
+% Convolve the response by the hrf kernel
+modelResponseStruct=obj.applyKernel(modelResponseStruct,hrfKernelStruct);
 
 % Mean center
 modelResponseStruct.values=modelResponseStruct.values - ...
