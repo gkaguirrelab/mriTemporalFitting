@@ -38,8 +38,6 @@ p.parse(nInstances,varargin{:});
 paramStruct.paramNameCell = { ...
     'amplitude_CTS',...
     'tauGammaIRF_CTS',...
-    'tauInhibitoryTimeConstant_LEAK',...
-    'kappaInhibitionAmplitude_LEAK'...
     'nCompression_dCTS',...
     'tauExpTimeConstant_dCTS',...
     'divisiveSigma_dCTS',...
@@ -49,11 +47,9 @@ paramStruct.paramNameCell = { ...
 if isempty(p.Results.initialValues)
     paramStruct.paramMainMatrix(:,1) = 1.0.*ones([nInstances 1]);  % amplitude_CTS
     paramStruct.paramMainMatrix(:,2) = 50.*ones([nInstances 1]);    % tauGammaIRF_CTS
-    paramStruct.paramMainMatrix(:,3) = 8.*ones([nInstances 1]); % tauInhibitoryTimeConstant_LEAK
-    paramStruct.paramMainMatrix(:,4) = .05.*ones([nInstances 1]); % kappaInhibitionAmplitude_LEAK
-    paramStruct.paramMainMatrix(:,5) = 1.8.*ones([nInstances 1]);    % nCompression_dCTS
-    paramStruct.paramMainMatrix(:,6) = 0.1.*ones([nInstances 1]);    % tauExpTimeConstant_dCTS
-    paramStruct.paramMainMatrix(:,7) = 0.1.*ones([nInstances 1]);    % divisiveSigma_dCTS
+    paramStruct.paramMainMatrix(:,3) = 1.8.*ones([nInstances 1]);    % nCompression_dCTS
+    paramStruct.paramMainMatrix(:,4) = 0.1.*ones([nInstances 1]);    % tauExpTimeConstant_dCTS
+    paramStruct.paramMainMatrix(:,5) = 0.1.*ones([nInstances 1]);    % divisiveSigma_dCTS
 else % use passed initial values
     for ii=1:length(paramStruct.paramNameCell)
         paramStruct.paramMainMatrix(:,ii) = p.Results.initialValues(ii).*ones([nInstances 1]);
@@ -65,11 +61,9 @@ end
 if isempty(p.Results.vlb)
     paramStruct.vlb(:,1) = repmat(-100,[nInstances 1]);
     paramStruct.vlb(:,2) = repmat(20,[nInstances 1]);
-    paramStruct.vlb(:,3) = repmat(1,[nInstances 1]);
-    paramStruct.vlb(:,4) = repmat(0,[nInstances 1]);
-    paramStruct.vlb(:,5) = repmat(1.8,[nInstances 1]);
-    paramStruct.vlb(:,6) = repmat(0.1,[nInstances 1]);
-    paramStruct.vlb(:,7) = repmat(0.1,[nInstances 1]);
+    paramStruct.vlb(:,3) = repmat(1.8,[nInstances 1]);
+    paramStruct.vlb(:,4) = repmat(0.1,[nInstances 1]);
+    paramStruct.vlb(:,5) = repmat(0.1,[nInstances 1]);
 else % used passed lower bounds
     for ii=1:length(paramStruct.paramNameCell)
         paramStruct.vlb(:,ii) = p.Results.vlb(ii).*ones([nInstances 1]);
@@ -80,11 +74,9 @@ end
 if isempty(p.Results.vub)
     paramStruct.vub(:,1) = repmat(100,[nInstances 1]);
     paramStruct.vub(:,2) = repmat(1000,[nInstances 1]);
-    paramStruct.vub(:,3) = repmat(60,[nInstances 1]);
-    paramStruct.vub(:,4) = repmat(1,[nInstances 1]);
-    paramStruct.vub(:,5) = repmat(1.8,[nInstances 1]);
-    paramStruct.vub(:,6) = repmat(0.1,[nInstances 1]);
-    paramStruct.vub(:,7) = repmat(0.1,[nInstances 1]);
+    paramStruct.vub(:,3) = repmat(1.8,[nInstances 1]);
+    paramStruct.vub(:,4) = repmat(0.1,[nInstances 1]);
+    paramStruct.vub(:,5) = repmat(0.1,[nInstances 1]);
 else % used passed upper bounds
     for ii=1:length(paramStruct.paramNameCell)
         paramStruct.vlb(:,ii) = p.Results.vlb(ii).*ones([nInstances 1]);

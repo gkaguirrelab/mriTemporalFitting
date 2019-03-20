@@ -17,10 +17,6 @@ function [modelResponseStruct] = forwardModelDynamicNormalization(obj,params,sti
 %
 %   Zhou, Benson, Kay, Winawer (2017) Systematic changes in temporal
 %     summation across human visual cortex
-%
-% The negative, adaptive effect is taken from:
-%
-%   Zaidi et al (2012) Neural Locus of Color Afterimages. Current Bio.
 
 %% Unpack the params
 %      amplitude - multiplicative scaling of the stimulus.
@@ -28,10 +24,6 @@ function [modelResponseStruct] = forwardModelDynamicNormalization(obj,params,sti
 %        value of 50 - 100 msecs was found in early visual areas.
 %      epsilonCompression_CTS - compressive non-linearity of response.
 %        Reasonable bouds are [0.1:1]. Not used if dCTS model evoked. 
-%      tauInhibitoryTimeConstant_LEAK - time constant of the leaky (exponential)
-%        integration of neural signals that produces delayed adaptation.
-%      kappaInhibitionAmplitude_LEAK - multiplicative scaling of the inhibitory
-%        effect.
 %      tauExpTimeConstant_dCTS - time constant of the low-pass (exponential
 %        decay) component (in secs). Reasonable bounds [0.1:1]
 %      nCompression_dCTS - compressive non-linearity parameter. Reasonable
@@ -39,13 +31,8 @@ function [modelResponseStruct] = forwardModelDynamicNormalization(obj,params,sti
 %      divisiveSigma_dCTS - Adjustment factor to the divisive temporal
 %        normalization. Found to be ~0.1 in V1.
 
-% Hard coded params
-vExponent = 3; % Observed by Zaidi et al. to provide the best fit to the RGC response data
-
 amplitude_CTSVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'amplitude_CTS'));
 tauGammaIRF_CTSVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'tauGammaIRF_CTS'));
-tauInhibitoryTimeConstant_LEAKVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'tauInhibitoryTimeConstant_LEAK'));
-kappaInhibitionAmplitude_LEAKVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'kappaInhibitionAmplitude_LEAK'));
 
 % Extract the elements of the dCTS model
 tauExpTimeConstant_dCTSVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'tauExpTimeConstant_dCTS'));
@@ -104,18 +91,6 @@ for ii=1:numInstances
     
     %% Apply amplitude gain
     yNeural.values = yNeural.values.*amplitude_CTSVec(ii);
-        
-    %% Implement the subtractive effect of a leaky integrator
-    % Create an exponential integrator, normalize the area, and convolve
-    inhibitoryKernelStruct.values=exp(-1/(tauInhibitoryTimeConstant_LEAKVec(ii)*1000)*inhibitoryKernelStruct.timebase);
-    inhibitoryKernelStruct=normalizeKernelArea(inhibitoryKernelStruct);
-    inhibitionStruct=obj.applyKernel(yNeural,inhibitoryKernelStruct);
-    % raise the inhition temporal profile to vExponent, but preserve area
-    inhibitionArea=sum(abs(inhibitionStruct.values));
-    inhibitionStruct.values=inhibitionStruct.values.^vExponent;
-    inhibitionStruct.values=inhibitionStruct.values/sum(abs(inhibitionStruct.values))*inhibitionArea;
-    % Apply the inhibition, scaled by the kappa value
-    yNeural.values=yNeural.values- (inhibitionStruct.values*kappaInhibitionAmplitude_LEAKVec(ii));
     
     %% Place yNeural into the growing neuralMatrix
     responseMatrix(ii,:)=yNeural.values;
