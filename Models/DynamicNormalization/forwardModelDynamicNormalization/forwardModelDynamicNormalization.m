@@ -68,9 +68,15 @@ for ii=1:numInstances
     %% Apply gamma convolution
     % Define a gamma function that transforms the
     % stimulus input into a profile of neural activity (e.g., LFP)
-    gammaPositive = gammaKernelStruct.timebase .* exp(-gammaKernelStruct.timebase/tauGammaIRF_CTSVec(ii));
-    gammaNegative = gammaKernelStruct.timebase .* exp(-gammaKernelStruct.timebase/tauGammaIRF_CTSVec(ii)*1.5);
-    gammaKernel = gammaPositive - weightGammaIRFNeg_CTSVec * gammaNegative;
+    gammaPositive = gammaKernelStruct;
+    gammaPositive.values = gammaPositive.timebase .* exp(-gammaPositive.timebase/tauGammaIRF_CTSVec(ii));   
+    gammaPositive = normalizeKernelArea(gammaPositive);
+
+    gammaNegative = gammaKernelStruct;    
+    gammaNegative.values = gammaNegative.timebase .* exp(-gammaNegative.timebase/(tauGammaIRF_CTSVec(ii)*1.5));
+    gammaNegative = normalizeKernelArea(gammaNegative);
+    
+    gammaKernel = gammaPositive.values - weightGammaIRFNeg_CTSVec * gammaNegative.values;
     gammaKernelStruct.values = gammaKernel;
     % scale the kernel to preserve area of response after convolution
     gammaKernelStruct=normalizeKernelArea(gammaKernelStruct);
