@@ -22,8 +22,6 @@ function [modelResponseStruct] = forwardModelDynamicNormalization(obj,params,sti
 %
 %   Zaidi et al (2012) Neural Locus of Color Afterimages. Current Bio.
 
-
-
 %% Unpack the params
 %      amplitude - multiplicative scaling of the stimulus.
 %      tauGammaIRF_CTS - time constant of the neural gamma IRF in msecs. A
@@ -49,19 +47,10 @@ tauGammaIRF_CTSVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'tauGamm
 tauInhibitoryTimeConstant_LEAKVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'tauInhibitoryTimeConstant_LEAK'));
 kappaInhibitionAmplitude_LEAKVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'kappaInhibitionAmplitude_LEAK'));
 
-% Detect if the elements of the dCTS model are defined
-if sum(strcmp(params.paramNameCell,'tauExpTimeConstant_dCTS'))>0 && ...
-        sum(strcmp(params.paramNameCell,'nCompression_dCTS'))>0 && ...
-        sum(strcmp(params.paramNameCell,'divisiveSigma_dCTS'))>0
-    tauExpTimeConstant_dCTSVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'tauExpTimeConstant_dCTS'));
-    nCompression_dCTSVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'nCompression_dCTS'));
-    divisiveSigma_dCTSVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'divisiveSigma_dCTS'));
-    dCTS_flag = true;
-else
-    epsilonCompression_CTSVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'epsilonCompression_CTS'));
-    dCTS_flag = false;
-end
-
+% Extract the elements of the dCTS model
+tauExpTimeConstant_dCTSVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'tauExpTimeConstant_dCTS'));
+nCompression_dCTSVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'nCompression_dCTS'));
+divisiveSigma_dCTSVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'divisiveSigma_dCTS'));
 
 %% Define basic model features
 
@@ -78,10 +67,8 @@ gammaKernelStruct.values=stimulusStruct.timebase*0;
 inhibitoryKernelStruct.timebase=stimulusStruct.timebase;
 inhibitoryKernelStruct.values=stimulusStruct.timebase*0;
 
-if dCTS_flag
-    exponentialKernelStruct.timebase=stimulusStruct.timebase;
-    exponentialKernelStruct.values=stimulusStruct.timebase*0;
-end
+exponentialKernelStruct.timebase=stimulusStruct.timebase;
+exponentialKernelStruct.values=stimulusStruct.timebase*0;
 
 %% We loop through each column of the stimulus matrix
 for ii=1:numInstances
@@ -100,26 +87,20 @@ for ii=1:numInstances
     yNeural=obj.applyKernel(signalStruct,gammaKernelStruct);
     
     %% Implement the dCTS model.
-    if dCTS_flag
-        % Create the exponential low-pass kernel that defines the time-domain
-        % properties of the normalization
-        exponentialKernelStruct.values=exp(-1/(tauExpTimeConstant_dCTSVec(ii)*1000)*exponentialKernelStruct.timebase);
-        % scale the kernel to preserve area of response after convolution
-        exponentialKernelStruct=normalizeKernelArea(exponentialKernelStruct);
-        % Convolve the linear response by the exponential decay
-        denominatorStruct=obj.applyKernel(yNeural,exponentialKernelStruct);
-        % Apply the compresion and add the semi-saturation constant
-        denominatorStruct.values=(divisiveSigma_dCTSVec(ii)^nCompression_dCTSVec(ii)) + ...
-            denominatorStruct.values.^nCompression_dCTSVec(ii);
-        % Apply the compresion to the numerator
-        numeratorStruct.values=yNeural.values.^nCompression_dCTSVec(ii);
-        % Compute the final dCTS values
-        yNeural.values=numeratorStruct.values./denominatorStruct.values;
-    else
-        % If we are not implementing the dCTS model, apply compressive
-        % non-linearity
-        yNeural.values=yNeural.values.^epsilonCompression_CTSVec(ii);
-    end
+    % Create the exponential low-pass kernel that defines the time-domain
+    % properties of the normalization
+    exponentialKernelStruct.values=exp(-1/(tauExpTimeConstant_dCTSVec(ii)*1000)*exponentialKernelStruct.timebase);
+    % scale the kernel to preserve area of response after convolution
+    exponentialKernelStruct=normalizeKernelArea(exponentialKernelStruct);
+    % Convolve the linear response by the exponential decay
+    denominatorStruct=obj.applyKernel(yNeural,exponentialKernelStruct);
+    % Apply the compresion and add the semi-saturation constant
+    denominatorStruct.values=(divisiveSigma_dCTSVec(ii)^nCompression_dCTSVec(ii)) + ...
+        denominatorStruct.values.^nCompression_dCTSVec(ii);
+    % Apply the compresion to the numerator
+    numeratorStruct.values=yNeural.values.^nCompression_dCTSVec(ii);
+    % Compute the final dCTS values
+    yNeural.values=numeratorStruct.values./denominatorStruct.values;
     
     %% Apply amplitude gain
     yNeural.values = yNeural.values.*amplitude_CTSVec(ii);

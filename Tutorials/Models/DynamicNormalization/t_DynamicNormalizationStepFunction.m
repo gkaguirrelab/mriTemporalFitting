@@ -3,12 +3,13 @@ fprintf('Zhou et al., 2017. (Fig 1A-ish) - Step function stimulus subjected to t
 fprintf('  In blue is the stimulus, in grey the simulated response, in red the model fit.\n\n');
 
 %% Housekeeping and setup
+clear all; close all;
 stimulusStruct=[];
 thePacket=[];
 modelResponseStruct=[];
 params=[];
 
-temporalFit = tfeBTRM('verbosity','none'); % Construct the model object
+temporalFit = tfeDynamicNormalization('verbosity','none'); % Construct the model object
 
 %% Create a 500 msec step stimulus
 deltaT = 1; % in msecs
@@ -41,7 +42,7 @@ hold on
 refline(0,0);
 
 %% create the simulated response
-modelResponseStruct = temporalFit.computeResponse(params,stimulusStruct,[],'AddNoise',true,'use_dCTS',true);
+modelResponseStruct = temporalFit.computeResponse(params,stimulusStruct,[],'AddNoise',true);
 
 %% Plot simulated response
 temporalFit.plot(modelResponseStruct,'NewWindow',false,'Color',[0.5 0.5 0.5],'DisplayName','broad band power');
