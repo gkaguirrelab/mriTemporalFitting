@@ -33,6 +33,7 @@ function [modelResponseStruct] = forwardModelDynamicNormalization(obj,params,sti
 
 amplitude_CTSVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'amplitude_CTS'));
 tauGammaIRF_CTSVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'tauGammaIRF_CTS'));
+weightGammaIRFNeg_CTSVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'weightGammaIRFNeg_CTS'));
 
 % Extract the elements of the dCTS model
 tauExpTimeConstant_dCTSVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'tauExpTimeConstant_dCTS'));
@@ -67,7 +68,10 @@ for ii=1:numInstances
     %% Apply gamma convolution
     % Define a gamma function that transforms the
     % stimulus input into a profile of neural activity (e.g., LFP)
-    gammaKernelStruct.values = gammaKernelStruct.timebase .* exp(-gammaKernelStruct.timebase/tauGammaIRF_CTSVec(ii));
+    gammaPositive = gammaKernelStruct.timebase .* exp(-gammaKernelStruct.timebase/tauGammaIRF_CTSVec(ii));
+    gammaNegative = gammaKernelStruct.timebase .* exp(-gammaKernelStruct.timebase/tauGammaIRF_CTSVec(ii)*1.5);
+    gammaKernel = gammaPositive - weightGammaIRFNeg_CTSVec * gammaNegative;
+    gammaKernelStruct.values = gammaKernel;
     % scale the kernel to preserve area of response after convolution
     gammaKernelStruct=normalizeKernelArea(gammaKernelStruct);
     % Convolve the stimulus struct by the gammaKernel
