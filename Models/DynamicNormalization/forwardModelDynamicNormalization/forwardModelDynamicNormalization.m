@@ -1,5 +1,5 @@
-function [modelResponseStruct] = forwardModelBTRM(obj,params,stimulusStruct)
-%% forwardModelBTRM
+function [modelResponseStruct] = forwardModelDynamicNormalization(obj,params,stimulusStruct)
+%% forwardModelDynamicNormalization
 %
 % This function creates a model of neural response given a vector of
 % stimulus input, a vector of time points, and a set of parameters.

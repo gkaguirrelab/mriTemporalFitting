@@ -1,7 +1,7 @@
-classdef tfeBTRM < tfe
+classdef tfeDynamicNormalization < tfe
 % tfeTPUP
 %
-%   tfe = tfeBTRM(varargin)
+%   tfe = tfeDynamicNormalization(varargin)
 %
 % Blocked temporal response model.
 %
@@ -27,7 +27,7 @@ classdef tfeBTRM < tfe
     % function, but we put the class constructor here.  
     methods (Access=public)
         % Constructor
-        function obj = tfeBTRM(varargin)
+        function obj = tfeDynamicNormalization(varargin)
             
             % Base class constructor
             obj = obj@tfe(varargin{:});
