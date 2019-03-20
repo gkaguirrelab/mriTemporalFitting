@@ -55,8 +55,7 @@ thePacket.kernel = []; thePacket.metaData = [];
 %% Fit the simulated data
 [paramsFit.demo3,fVal,modelResponseStruct] = ...
     temporalFit.fitResponse(thePacket,...
-    'defaultParamsInfo', defaultParamsInfo,...
-    'use_dCTS',true);
+    'defaultParamsInfo', defaultParamsInfo);
 
 %% Plot fit
 temporalFit.plot(modelResponseStruct,'NewWindow',false,'Color',[1 0.25 0.25],'DisplayName','fit');
