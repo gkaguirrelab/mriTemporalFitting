@@ -49,7 +49,7 @@ if isempty(p.Results.initialValues)
     paramStruct.paramMainMatrix(:,1) = 1.0.*ones([nInstances 1]);  % amplitude_CTS
     paramStruct.paramMainMatrix(:,2) = 50.*ones([nInstances 1]);    % tauGammaIRF_CTS
     paramStruct.paramMainMatrix(:,3) = 0.*ones([nInstances 1]);
-    paramStruct.paramMainMatrix(:,4) = 1.8.*ones([nInstances 1]);    % nCompression_dCTS
+    paramStruct.paramMainMatrix(:,4) = 2.*ones([nInstances 1]);    % nCompression_dCTS
     paramStruct.paramMainMatrix(:,5) = 0.1.*ones([nInstances 1]);    % tauExpTimeConstant_dCTS
     paramStruct.paramMainMatrix(:,6) = 0.1.*ones([nInstances 1]);    % divisiveSigma_dCTS
 else % use passed initial values
@@ -64,7 +64,7 @@ if isempty(p.Results.vlb)
     paramStruct.vlb(:,1) = repmat(-100,[nInstances 1]);
     paramStruct.vlb(:,2) = repmat(20,[nInstances 1]);
     paramStruct.vlb(:,3) = repmat(0,[nInstances 1]);
-    paramStruct.vlb(:,4) = repmat(1.8,[nInstances 1]);
+    paramStruct.vlb(:,4) = repmat(2,[nInstances 1]);
     paramStruct.vlb(:,5) = repmat(0.1,[nInstances 1]);
     paramStruct.vlb(:,6) = repmat(0.1,[nInstances 1]);
 else % used passed lower bounds
@@ -78,7 +78,7 @@ if isempty(p.Results.vub)
     paramStruct.vub(:,1) = repmat(100,[nInstances 1]);
     paramStruct.vub(:,2) = repmat(1000,[nInstances 1]);
     paramStruct.vub(:,3) = repmat(1,[nInstances 1]);
-    paramStruct.vub(:,4) = repmat(1.8,[nInstances 1]);
+    paramStruct.vub(:,4) = repmat(2,[nInstances 1]);
     paramStruct.vub(:,5) = repmat(0.1,[nInstances 1]);
     paramStruct.vub(:,6) = repmat(0.1,[nInstances 1]);
 else % used passed upper bounds

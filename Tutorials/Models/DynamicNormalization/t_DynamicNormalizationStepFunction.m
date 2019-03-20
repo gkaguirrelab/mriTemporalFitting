@@ -23,8 +23,8 @@ defaultParamsInfo.nInstances = 1;
 params=temporalFit.defaultParams('defaultParamsInfo',defaultParamsInfo);
 params.paramMainMatrix(1)=15; % broadband power
 params.paramMainMatrix(2)=90; % gamma IRF time constant in msecs
-params.paramMainMatrix(3)=0;   % weight of negative IRF gamma function
-params.paramMainMatrix(4)=1.8; % compression in the dCTS
+params.paramMainMatrix(3)=0.7;   % weight of negative IRF gamma function
+params.paramMainMatrix(4)=2; % compression in the dCTS
 params.paramMainMatrix(5)=0.1; % adaptive time constant (in seconds)
 params.paramMainMatrix(6)=0.1; % sigma saturation constant
 
