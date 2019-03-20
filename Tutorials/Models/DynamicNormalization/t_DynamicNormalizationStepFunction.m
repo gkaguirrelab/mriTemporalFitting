@@ -20,7 +20,7 @@ stimulusStruct.values(1,250:750)=1;
 defaultParamsInfo.nInstances = 1;
 
 %% We use the dCTS, and minimize the Zaidi component
-params=temporalFit.defaultParams('defaultParamsInfo',defaultParamsInfo,'use_dCTS',true);
+params=temporalFit.defaultParams('defaultParamsInfo',defaultParamsInfo);
 params.paramMainMatrix(1)=15; % broadband power
 params.paramMainMatrix(2)=90; % gamma IRF time constant in msecs
 params.paramMainMatrix(3)=8; % 8 second time constant of leaky negative integrator
