@@ -62,10 +62,10 @@ end
 % set lower bounds
 if isempty(p.Results.vlb)
     paramStruct.vlb(:,1) = repmat(-100,[nInstances 1]);
-    paramStruct.vlb(:,2) = repmat(20,[nInstances 1]);
+    paramStruct.vlb(:,2) = repmat(90,[nInstances 1]);
     paramStruct.vlb(:,3) = repmat(0,[nInstances 1]);
     paramStruct.vlb(:,4) = repmat(2,[nInstances 1]);
-    paramStruct.vlb(:,5) = repmat(0.1,[nInstances 1]);
+    paramStruct.vlb(:,5) = repmat(0.01,[nInstances 1]);
     paramStruct.vlb(:,6) = repmat(0.1,[nInstances 1]);
 else % used passed lower bounds
     for ii=1:length(paramStruct.paramNameCell)
@@ -76,10 +76,10 @@ end
 % set upper bounds
 if isempty(p.Results.vub)
     paramStruct.vub(:,1) = repmat(100,[nInstances 1]);
-    paramStruct.vub(:,2) = repmat(1000,[nInstances 1]);
-    paramStruct.vub(:,3) = repmat(1,[nInstances 1]);
+    paramStruct.vub(:,2) = repmat(90,[nInstances 1]);
+    paramStruct.vub(:,3) = repmat(0,[nInstances 1]);
     paramStruct.vub(:,4) = repmat(2,[nInstances 1]);
-    paramStruct.vub(:,5) = repmat(0.1,[nInstances 1]);
+    paramStruct.vub(:,5) = repmat(1,[nInstances 1]);
     paramStruct.vub(:,6) = repmat(0.1,[nInstances 1]);
 else % used passed upper bounds
     for ii=1:length(paramStruct.paramNameCell)
