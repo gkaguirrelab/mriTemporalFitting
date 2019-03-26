@@ -66,41 +66,55 @@ for ii=1:numInstances
     signalStruct.values=signalStruct.values(ii,:);
     
     %% Apply gamma convolution
-    % Define a gamma function that transforms the
+    % If tauGamma is not zero, applt a gamma function that transforms the
     % stimulus input into a profile of neural activity (e.g., LFP)
-    gammaPositive = gammaKernelStruct;
-    gammaPositive.values = gammaPositive.timebase .* exp(-gammaPositive.timebase/tauGammaIRF_CTSVec(ii));   
-    gammaPositive = normalizeKernelArea(gammaPositive);
-
-    gammaNegative = gammaKernelStruct;    
-    gammaNegative.values = gammaNegative.timebase .* exp(-gammaNegative.timebase/(tauGammaIRF_CTSVec(ii)*1.5));
-    gammaNegative = normalizeKernelArea(gammaNegative);
-    
-    gammaKernel = gammaPositive.values - weightGammaIRFNeg_CTSVec * gammaNegative.values;
-    gammaKernelStruct.values = gammaKernel;
-    % scale the kernel to preserve area of response after convolution
-    gammaKernelStruct=normalizeKernelArea(gammaKernelStruct);
-    % Convolve the stimulus struct by the gammaKernel
-    yNeural=obj.applyKernel(signalStruct,gammaKernelStruct);
+    if all(tauGammaIRF_CTSVec==0)
+        yNeural=signalStruct.values;
+    else
+        gammaPositive = gammaKernelStruct;
+        gammaPositive.values = gammaPositive.timebase .* exp(-gammaPositive.timebase/tauGammaIRF_CTSVec(ii));
+        gammaPositive = normalizeKernelArea(gammaPositive);
+        
+        gammaNegative = gammaKernelStruct;
+        gammaNegative.values = gammaNegative.timebase .* exp(-gammaNegative.timebase/(tauGammaIRF_CTSVec(ii)*1.5));
+        gammaNegative = normalizeKernelArea(gammaNegative);
+        
+        gammaKernel = gammaPositive.values - weightGammaIRFNeg_CTSVec * gammaNegative.values;
+        gammaKernelStruct.values = gammaKernel;
+        % scale the kernel to preserve area of response after convolution
+        gammaKernelStruct=normalizeKernelArea(gammaKernelStruct);
+        % Convolve the stimulus struct by the gammaKernel
+        yNeural=obj.applyKernel(signalStruct,gammaKernelStruct);
+    end
     
     %% Implement the dCTS model.
     % Create the exponential low-pass kernel that defines the time-domain
     % properties of the normalization
-    exponentialKernelStruct.values=exp(-1/(tauExpTimeConstant_dCTSVec(ii)*1000)*exponentialKernelStruct.timebase);
-    % scale the kernel to preserve area of response after convolution
-    exponentialKernelStruct=normalizeKernelArea(exponentialKernelStruct);
-    % Convolve the linear response by the exponential decay
-    denominatorStruct=obj.applyKernel(yNeural,exponentialKernelStruct);
-    % Apply the compresion and add the semi-saturation constant
-    denominatorStruct.values=(divisiveSigma_dCTSVec(ii)^nCompression_dCTSVec(ii)) + ...
-        denominatorStruct.values.^nCompression_dCTSVec(ii);
-    % Apply the compresion to the numerator
-    numeratorStruct.values=yNeural.values.^nCompression_dCTSVec(ii);
-    % Compute the final dCTS values
-    yNeural.values=numeratorStruct.values./denominatorStruct.values;
+    if all(tauExpTimeConstant_dCTSVec==0)
+        yNeural = yNeural;
+    else
+        exponentialKernelStruct.values=exp(-1/(tauExpTimeConstant_dCTSVec(ii)*1000)*exponentialKernelStruct.timebase);
+        % scale the kernel to preserve area of response after convolution
+        exponentialKernelStruct=normalizeKernelArea(exponentialKernelStruct);
+        % Convolve the linear response by the exponential decay
+        denominatorStruct=obj.applyKernel(yNeural,exponentialKernelStruct);
+        % Apply the compresion and add the semi-saturation constant
+        denominatorStruct.values=(divisiveSigma_dCTSVec(ii)^nCompression_dCTSVec(ii)) + ...
+            denominatorStruct.values.^nCompression_dCTSVec(ii);
+        % Apply the compresion to the numerator
+        numeratorStruct.values=yNeural.values.^nCompression_dCTSVec(ii);
+        % Compute the final dCTS values
+        yNeural.values=numeratorStruct.values./denominatorStruct.values;
+    end
     
     %% Apply amplitude gain
     yNeural.values = yNeural.values.*amplitude_CTSVec(ii);
+    
+    %% Apply temporal shift
+    %% DO IT HERE
+    
+    %% Mean center the output
+    yNeural.values = yNeural.values - mean(yNeural.values);
     
     %% Place yNeural into the growing neuralMatrix
     responseMatrix(ii,:)=yNeural.values;
