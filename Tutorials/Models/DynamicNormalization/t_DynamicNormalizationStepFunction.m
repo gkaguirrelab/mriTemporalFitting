@@ -3,7 +3,7 @@ fprintf('Zhou et al., 2017. (Fig 1A-ish) - Step function stimulus subjected to t
 fprintf('  In blue is the stimulus, in grey the simulated response, in red the model fit.\n\n');
 
 %% Housekeeping and setup
-clear all; close all;
+clear all; %close all;
 stimulusStruct=[];
 thePacket=[];
 modelResponseStruct=[];
@@ -22,13 +22,13 @@ defaultParamsInfo.nInstances = 1;
 %% We use the dCTS, and minimize the Zaidi component
 params=temporalFit.defaultParams('defaultParamsInfo',defaultParamsInfo);
 params.paramMainMatrix(1)=15; % broadband power
-params.paramMainMatrix(2)=90; % gamma IRF time constant in msecs
-params.paramMainMatrix(3)=0.7;   % weight of negative IRF gamma function
+params.paramMainMatrix(2)=0.005*1000; % gamma IRF time constant in msecs
+params.paramMainMatrix(3)=0;   % weight of negative IRF gamma function
 params.paramMainMatrix(4)=2; % compression in the dCTS
 params.paramMainMatrix(5)=0.1; % adaptive time constant (in seconds)
 params.paramMainMatrix(6)=0.1; % sigma saturation constant
 
-params.noiseSd=1; % stdev of noise
+params.noiseSd=0; % stdev of noise
 params.noiseInverseFrequencyPower=0; % white noise
 
 %% Plot stimulus profile
@@ -57,4 +57,4 @@ thePacket.kernel = []; thePacket.metaData = [];
     'defaultParamsInfo', defaultParamsInfo);
 
 %% Plot fit
-temporalFit.plot(modelResponseStruct,'NewWindow',false,'Color',[1 0.25 0.25],'DisplayName','fit');
+%temporalFit.plot(modelResponseStruct,'NewWindow',false,'Color',[1 0.25 0.25],'DisplayName','fit');

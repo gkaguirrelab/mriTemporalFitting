@@ -22,8 +22,6 @@ function [modelResponseStruct] = forwardModelDynamicNormalization(obj,params,sti
 %      amplitude - multiplicative scaling of the stimulus.
 %      tauGammaIRF_CTS - time constant of the neural gamma IRF in msecs. A
 %        value of 50 - 100 msecs was found in early visual areas.
-%      epsilonCompression_CTS - compressive non-linearity of response.
-%        Reasonable bouds are [0.1:1]. Not used if dCTS model evoked. 
 %      tauExpTimeConstant_dCTS - time constant of the low-pass (exponential
 %        decay) component (in secs). Reasonable bounds [0.1:1]
 %      nCompression_dCTS - compressive non-linearity parameter. Reasonable
@@ -100,6 +98,7 @@ for ii=1:numInstances
     yNeural.values=numeratorStruct.values./denominatorStruct.values;
     
     %% Apply amplitude gain
+    yNeural.values = (yNeural.values - nanmean(yNeural.values))./nanmean(yNeural.values);
     yNeural.values = yNeural.values.*amplitude_CTSVec(ii);
     
     %% Place yNeural into the growing neuralMatrix

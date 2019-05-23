@@ -177,7 +177,7 @@ params.paramMainMatrix(5)=1.8; % compression in the dCTS
 params.paramMainMatrix(6)=0.1; % adaptive time constant (in seconds)
 params.paramMainMatrix(7)=0.1; % sigma saturation constant
 
-params.noiseSd=1; % stdev of noise
+params.noiseSd=0; % stdev of noise
 params.noiseInverseFrequencyPower=0; % white noise
 
 if p.Results.generatePlots

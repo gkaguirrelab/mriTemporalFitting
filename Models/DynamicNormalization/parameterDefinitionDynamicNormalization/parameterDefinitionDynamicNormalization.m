@@ -46,9 +46,9 @@ paramStruct.paramNameCell = { ...
 
 % initial values
 if isempty(p.Results.initialValues)
-    paramStruct.paramMainMatrix(:,1) = 1.0.*ones([nInstances 1]);  % amplitude_CTS
+    paramStruct.paramMainMatrix(:,1) = 1.*ones([nInstances 1]);  % amplitude_CTS
     paramStruct.paramMainMatrix(:,2) = 50.*ones([nInstances 1]);    % tauGammaIRF_CTS
-    paramStruct.paramMainMatrix(:,3) = 0.*ones([nInstances 1]);
+    paramStruct.paramMainMatrix(:,3) = 0.*ones([nInstances 1]);     % weightGammaIRFNeg_CTS
     paramStruct.paramMainMatrix(:,4) = 2.*ones([nInstances 1]);    % nCompression_dCTS
     paramStruct.paramMainMatrix(:,5) = 0.1.*ones([nInstances 1]);    % tauExpTimeConstant_dCTS
     paramStruct.paramMainMatrix(:,6) = 0.1.*ones([nInstances 1]);    % divisiveSigma_dCTS
