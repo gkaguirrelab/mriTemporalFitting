@@ -40,7 +40,6 @@ exponentialTauVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'exponent
 amplitudeTransientVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'amplitudeTransient')).*1000;
 amplitudeSustainedVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'amplitudeSustained')).*1000;
 amplitudePersistentVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'amplitudePersistent')).*1000;
-amplitudeOffVec = params.paramMainMatrix(:,strcmp(params.paramNameCell,'amplitudeOff')).*1000;
 
 % derive some basic properties of the stimulus values
 numInstances=size(stimulusStruct.values,1);
@@ -67,9 +66,6 @@ for ii=1:numInstances
     % stimulus at the time of onset.
     stimulusSlewOn.values= max( [ [diff(stimulus.values) 0]; zeros(1,length(stimulus.timebase)) ] );
     stimulusSlewOn.timebase=stimulus.timebase;
-    
-    stimulusSlewOff.values= abs(min( [ [diff(stimulus.values) 0]; zeros(1,length(stimulus.timebase)) ] ));
-    stimulusSlewOff.timebase=stimulus.timebase;
 
     % Create the gamma kernel
     gammaIRF.values = stimulus.timebase .* exp(-stimulus.timebase./gammaTauVec(ii));
@@ -81,19 +77,20 @@ for ii=1:numInstances
     
     transientComponent = obj.applyKernel(stimulusSlewOn,gammaIRF);
     sustainedComponent = obj.applyKernel(stimulus,gammaIRF);
-    persistentComponent = obj.applyKernel(obj.applyKernel(stimulusSlewOn,exponentialIRF),gammaIRF);
-    offComponent = obj.applyKernel(stimulusSlewOff, gammaIRF);
+    persistentComponent = obj.applyKernel(obj.applyKernel(stimulusSlewOn,exponentialIRF),gammaIRF); % standard: make persistent component out of stimulusOnset
+    %persistentComponent = obj.applyKernel(obj.applyKernel(stimulus,exponentialIRF),gammaIRF); % make persistent component out of stimulus profile
+
+    %persistentComponent = obj.applyKernel(persistentComponent,gammaIRF); % convolve persistent component a second time with the gamma function to push the time-to-peak back further
+
     
     % Scale each component to have unit area
     transientComponent=normalizeKernelArea(transientComponent);
     sustainedComponent=normalizeKernelArea(sustainedComponent);
     persistentComponent=normalizeKernelArea(persistentComponent);
-    offComponent=normalizeKernelArea(offComponent);
     
     yPupil=transientComponent.values * amplitudeTransientVec(ii) + ...
         sustainedComponent.values * amplitudeSustainedVec(ii) + ...
-        persistentComponent.values * amplitudePersistentVec(ii) + ...
-        offComponent.values * amplitudeOffVec(ii);
+        persistentComponent.values * amplitudePersistentVec(ii);
     
     % apply the temporal delay
     initialValue=yPupil(1);
