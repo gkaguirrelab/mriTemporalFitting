@@ -25,7 +25,7 @@ for i=1:numInstances
     
     % Check if the very first value is 1, in which case the stim onset is
     % at the initial value
-    if tmp(1)==1
+    if tmp(1)==1 || stimulusStruct.values(i,1)==1
         stimOnset = 1;
     else
         stimOnset = strfind(tmp, [0 1]);
