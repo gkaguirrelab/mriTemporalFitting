@@ -42,6 +42,7 @@ paramStruct.paramNameCell = { ...
     'nCompression_dCTS',...
     'tauExpTimeConstant_dCTS',...
     'divisiveSigma_dCTS',...
+    'delay', ...
     };
 
 % initial values
@@ -52,6 +53,8 @@ if isempty(p.Results.initialValues)
     paramStruct.paramMainMatrix(:,4) = 2.*ones([nInstances 1]);    % nCompression_dCTS
     paramStruct.paramMainMatrix(:,5) = 0.1.*ones([nInstances 1]);    % tauExpTimeConstant_dCTS
     paramStruct.paramMainMatrix(:,6) = 0.1.*ones([nInstances 1]);    % divisiveSigma_dCTS
+    paramStruct.paramMainMatrix(:,7) = -200.*ones([nInstances 1]);
+
 else % use passed initial values
     for ii=1:length(paramStruct.paramNameCell)
         paramStruct.paramMainMatrix(:,ii) = p.Results.initialValues(ii).*ones([nInstances 1]);
@@ -62,11 +65,13 @@ end
 % set lower bounds
 if isempty(p.Results.vlb)
     paramStruct.vlb(:,1) = repmat(-100,[nInstances 1]);
-    paramStruct.vlb(:,2) = repmat(90,[nInstances 1]);
+    paramStruct.vlb(:,2) = repmat(0,[nInstances 1]);
     paramStruct.vlb(:,3) = repmat(0,[nInstances 1]);
     paramStruct.vlb(:,4) = repmat(2,[nInstances 1]);
     paramStruct.vlb(:,5) = repmat(0.01,[nInstances 1]);
     paramStruct.vlb(:,6) = repmat(0.1,[nInstances 1]);
+    paramStruct.vlb(:,7) = repmat(-1000,[nInstances 1]);
+
 else % used passed lower bounds
     for ii=1:length(paramStruct.paramNameCell)
         paramStruct.vlb(:,ii) = p.Results.vlb(ii).*ones([nInstances 1]);
@@ -81,6 +86,8 @@ if isempty(p.Results.vub)
     paramStruct.vub(:,4) = repmat(2,[nInstances 1]);
     paramStruct.vub(:,5) = repmat(1,[nInstances 1]);
     paramStruct.vub(:,6) = repmat(0.1,[nInstances 1]);
+    paramStruct.vub(:,7) = repmat(0,[nInstances 1]);
+
 else % used passed upper bounds
     for ii=1:length(paramStruct.paramNameCell)
         paramStruct.vlb(:,ii) = p.Results.vlb(ii).*ones([nInstances 1]);

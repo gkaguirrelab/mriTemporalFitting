@@ -29,6 +29,9 @@ function [modelResponseStruct] = forwardModelDynamicNormalization(obj,params,sti
 %      divisiveSigma_dCTS - Adjustment factor to the divisive temporal
 %        normalization. Found to be ~0.1 in V1.
 
+delayVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'delay'));
+
+
 amplitude_CTSVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'amplitude_CTS'));
 tauGammaIRF_CTSVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'tauGammaIRF_CTS'));
 weightGammaIRFNeg_CTSVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'weightGammaIRFNeg_CTS'));
@@ -110,7 +113,12 @@ for ii=1:numInstances
     yNeural.values = yNeural.values.*amplitude_CTSVec(ii);
     
     %% Apply temporal shift
-    %% DO IT HERE
+     % apply the temporal delay
+     check = diff(stimulusStruct.timebase);
+    deltaT = check(1);
+     initialValue= yNeural.values(1);
+     yNeural.values=fshift( yNeural.values,-1*delayVec(ii)/deltaT);
+     yNeural.values(1:ceil(-1*delayVec(ii)/deltaT))=initialValue;
     
     %% Mean center the output
     yNeural.values = yNeural.values - mean(yNeural.values);
