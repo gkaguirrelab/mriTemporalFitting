@@ -78,7 +78,7 @@ for ii=1:numInstances
     
     %% Perform second neural transformation of input
     % Create the gamma kernel for the persistent component
-    persistentGammaIRF.values = stimulus.timebase .* exp(-stimulus.timebase./persistentGammaTauVec(ii));
+    persistentGammaIRF.values = stimulus.timebase .* exp(-stimulus.timebase./(persistentGammaTauVec(ii)));
     persistentGammaIRF=normalizeKernelArea(persistentGammaIRF);
 
     
@@ -86,7 +86,7 @@ for ii=1:numInstances
     exponentialIRF.values=exp(-1/exponentialTauVec(ii)*stimulus.timebase);
     exponentialIRF=normalizeKernelArea(exponentialIRF);
     
-    % standard: make persistent component out of stimulusOnset. This implements the old TPUP
+    % Old TPUP implmentation: make persistent component out of stimulusOnset
     %persistentComponent = obj.applyKernel(persistentComponent,exponentialIRF); 
 
     % apply transformation to the persistent component
