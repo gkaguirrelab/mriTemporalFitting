@@ -30,25 +30,44 @@ p.parse(nInstances,varargin{:});
 
 % cell for labeling each parameter column
 paramStruct.paramNameCell = {...
-    'delay',...
     'gammaTau', ...
-    'exponentialTau', ...
-    'amplitudeTransient', ...
-    'amplitudeSustained', ...
-    'amplitudePersistent', ...
-    'persistentGammaTau', ...
+    'persistentGammaTau', ...    
+    'LMSDelay',...
+    'LMSExponentialTau', ...
+    'LMSAmplitudeTransient', ...
+    'LMSAmplitudeSustained', ...
+    'LMSAmplitudePersistent', ...  
+    'MelanopsinDelay',...
+    'MelanopsinExponentialTau', ...
+    'MelanopsinAmplitudeTransient', ...
+    'MelanopsinAmplitudeSustained', ...
+    'MelanopsinAmplitudePersistent', ...   
+    'LightFluxDelay',...
+    'LightFluxExponentialTau', ...
+    'LightFluxAmplitudeTransient', ...
+    'LightFluxAmplitudeSustained', ...
+    'LightFluxAmplitudePersistent', ...
     };
 
 % initial values
 if isempty(p.Results.initialValues)
     paramStruct.paramMainMatrix(:,1) = 200.*ones([nInstances 1]);
-    paramStruct.paramMainMatrix(:,2) = 200.*ones([nInstances 1]);
-    paramStruct.paramMainMatrix(:,3) = 10.*ones([nInstances 1]);
-    paramStruct.paramMainMatrix(:,4) = -10.*ones([nInstances 1]);
-    paramStruct.paramMainMatrix(:,5) = -25.*ones([nInstances 1]);
-    paramStruct.paramMainMatrix(:,6) = -25.*ones([nInstances 1]);
-    paramStruct.paramMainMatrix(:,7) = 200.*ones([nInstances 1]);
-
+    paramStruct.paramMainMatrix(:,2) = 200.*ones([nInstances 1]);    
+    paramStruct.paramMainMatrix(:,3) = -200.*ones([nInstances 1]);
+    paramStruct.paramMainMatrix(:,4) = 10.*ones([nInstances 1]);
+    paramStruct.paramMainMatrix(:,5) = -1.*ones([nInstances 1]);
+    paramStruct.paramMainMatrix(:,6) = -1.*ones([nInstances 1]);
+    paramStruct.paramMainMatrix(:,7) = -1.*ones([nInstances 1]);    
+    paramStruct.paramMainMatrix(:,8) = -200.*ones([nInstances 1]);
+    paramStruct.paramMainMatrix(:,9) = 10.*ones([nInstances 1]);
+    paramStruct.paramMainMatrix(:,10) = -1.*ones([nInstances 1]);
+    paramStruct.paramMainMatrix(:,11) = -1.*ones([nInstances 1]);
+    paramStruct.paramMainMatrix(:,12) = -1.*ones([nInstances 1]);    
+    paramStruct.paramMainMatrix(:,13) = -200.*ones([nInstances 1]);
+    paramStruct.paramMainMatrix(:,14) = 10.*ones([nInstances 1]);
+    paramStruct.paramMainMatrix(:,15) = -1.*ones([nInstances 1]);
+    paramStruct.paramMainMatrix(:,16) = -1.*ones([nInstances 1]);
+    paramStruct.paramMainMatrix(:,17) = -1.*ones([nInstances 1]);
 else % use passed initial values
     for ii=1:length(paramStruct.paramNameCell)
         paramStruct.paramMainMatrix(:,ii) = p.Results.initialValues(ii).*ones([nInstances 1]);
@@ -57,14 +76,23 @@ end
 
 % set lower bounds
 if isempty(p.Results.vlb)
-    paramStruct.vlb(:,1) = repmat(0,[nInstances 1]);
-    paramStruct.vlb(:,2) = repmat(100,[nInstances 1]);
-    paramStruct.vlb(:,3) = repmat(1,[nInstances 1]);
-    paramStruct.vlb(:,4) = repmat(-2000,[nInstances 1]);
-    paramStruct.vlb(:,5) = repmat(-2000,[nInstances 1]);
-    paramStruct.vlb(:,6) = repmat(-2000,[nInstances 1]);
-    paramStruct.vlb(:,7) = repmat(100,[nInstances 1]);
-
+    paramStruct.vlb(:,1) = repmat(1,[nInstances 1]);
+    paramStruct.vlb(:,2) = repmat(1,[nInstances 1]);    
+    paramStruct.vlb(:,3) = repmat(-500,[nInstances 1]);
+    paramStruct.vlb(:,4) = repmat(1,[nInstances 1]);
+    paramStruct.vlb(:,5) = repmat(-10,[nInstances 1]);
+    paramStruct.vlb(:,6) = repmat(-10,[nInstances 1]);
+    paramStruct.vlb(:,7) = repmat(-10,[nInstances 1]);    
+    paramStruct.vlb(:,8) = repmat(-500,[nInstances 1]);
+    paramStruct.vlb(:,9) = repmat(1,[nInstances 1]);
+    paramStruct.vlb(:,10) = repmat(-10,[nInstances 1]);
+    paramStruct.vlb(:,11) = repmat(-10,[nInstances 1]);
+    paramStruct.vlb(:,12) = repmat(-10,[nInstances 1]);    
+    paramStruct.vlb(:,13) = repmat(-500,[nInstances 1]);
+    paramStruct.vlb(:,14) = repmat(1,[nInstances 1]);
+    paramStruct.vlb(:,15) = repmat(-10,[nInstances 1]);
+    paramStruct.vlb(:,16) = repmat(-10,[nInstances 1]);
+    paramStruct.vlb(:,17) = repmat(-10,[nInstances 1]);
 else % used passed lower bounds
     for ii=1:length(paramStruct.paramNameCell)
         paramStruct.vlb(:,ii) = p.Results.vlb(ii).*ones([nInstances 1]);
@@ -73,14 +101,23 @@ end
 
 % set upper bounds
 if isempty(p.Results.vub)
-    paramStruct.vub(:,1) = repmat(500,[nInstances 1]);
-    paramStruct.vub(:,2) = repmat(350,[nInstances 1]);
-    paramStruct.vub(:,3) = repmat(30,[nInstances 1]);
-    paramStruct.vub(:,4) = repmat(0,[nInstances 1]);
+    paramStruct.vub(:,1) = repmat(1000,[nInstances 1]);
+    paramStruct.vub(:,2) = repmat(1000,[nInstances 1]);    
+    paramStruct.vub(:,3) = repmat(0,[nInstances 1]);
+    paramStruct.vub(:,4) = repmat(20,[nInstances 1]);
     paramStruct.vub(:,5) = repmat(0,[nInstances 1]);
     paramStruct.vub(:,6) = repmat(0,[nInstances 1]);
-    paramStruct.vub(:,7) = repmat(800,[nInstances 1]);
-
+    paramStruct.vub(:,7) = repmat(0,[nInstances 1]);    
+    paramStruct.vub(:,8) = repmat(0,[nInstances 1]);
+    paramStruct.vub(:,9) = repmat(20,[nInstances 1]);
+    paramStruct.vub(:,10) = repmat(0,[nInstances 1]);
+    paramStruct.vub(:,11) = repmat(0,[nInstances 1]);
+    paramStruct.vub(:,12) = repmat(0,[nInstances 1]);    
+    paramStruct.vub(:,13) = repmat(0,[nInstances 1]);
+    paramStruct.vub(:,14) = repmat(20,[nInstances 1]);
+    paramStruct.vub(:,15) = repmat(0,[nInstances 1]);
+    paramStruct.vub(:,16) = repmat(0,[nInstances 1]);
+    paramStruct.vub(:,17) = repmat(0,[nInstances 1]);
 else % used passed upper bounds
     for ii=1:length(paramStruct.paramNameCell)
         paramStruct.vub(:,ii) = p.Results.vub(ii).*ones([nInstances 1]);

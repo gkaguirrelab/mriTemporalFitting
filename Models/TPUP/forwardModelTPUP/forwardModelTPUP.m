@@ -34,13 +34,24 @@ function [modelResponseStruct] = forwardModelTPUP(obj,params,stimulusStruct)
 %     to the stimulus
 %     gammaTau - time constant of the transient gamma function
 
-delayVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'delay'));
+
 gammaTauVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'gammaTau'));
 persistentGammaTauVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'persistentGammaTau'));
-exponentialTauVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'exponentialTau')).*1000;
-amplitudeTransientVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'amplitudeTransient')).*1000;
-amplitudeSustainedVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'amplitudeSustained')).*1000;
-amplitudePersistentVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'amplitudePersistent')).*1000;
+LMSDelayVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'LMSDelay'));
+LMSExponentialTauVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'LMSExponentialTau')).*1000;
+LMSAmplitudeTransientVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'LMSAmplitudeTransient')).*1000;
+LMSAmplitudeSustainedVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'LMSAmplitudeSustained')).*1000;
+LMSAmplitudePersistentVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'LMSAmplitudePersistent')).*1000;
+MelanopsinDelayVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'MelanopsinDelay'));
+MelanopsinExponentialTauVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'MelanopsinExponentialTau')).*1000;
+MelanopsinAmplitudeTransientVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'MelanopsinAmplitudeTransient')).*1000;
+MelanopsinAmplitudeSustainedVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'MelanopsinAmplitudeSustained')).*1000;
+MelanopsinAmplitudePersistentVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'MelanopsinAmplitudePersistent')).*1000;
+LightFluxDelayVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'LightFluxDelay'));
+LightFluxExponentialTauVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'LightFluxExponentialTau')).*1000;
+LightFluxAmplitudeTransientVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'LightFluxAmplitudeTransient')).*1000;
+LightFluxAmplitudeSustainedVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'LightFluxAmplitudeSustained')).*1000;
+LightFluxAmplitudePersistentVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'LightFluxAmplitudePersistent')).*1000;
 
 % derive some basic properties of the stimulus values
 numInstances=size(stimulusStruct.values,1);
@@ -54,8 +65,13 @@ gammaIRF.values = stimulusStruct.timebase .* 0;
 gammaIRF.timebase = stimulusStruct.timebase;
 persistentGammaIRF.values = stimulusStruct.timebase .* 0;
 persistentGammaIRF.timebase = stimulusStruct.timebase;
-exponentialIRF.values=stimulusStruct.timebase .* 0;
-exponentialIRF.timebase=stimulusStruct.timebase;
+
+LMSExponentialIRF.values=stimulusStruct.timebase .* 0;
+LMSExponentialIRF.timebase=stimulusStruct.timebase;
+MelanopsinExponentialIRF.values=stimulusStruct.timebase .* 0;
+MelanopsinExponentialIRF.timebase=stimulusStruct.timebase;
+LightFluxExponentialIRF.values=stimulusStruct.timebase .* 0;
+LightFluxExponentialIRF.timebase=stimulusStruct.timebase;
 
 
 %% We loop through each row of the stimulus matrix
@@ -66,32 +82,33 @@ for ii=1:numInstances
     % grab the current stimulus
     stimulus.values = stimulusStruct.values(ii,:);
     stimulus.timebase = stimulusStruct.timebase;
-        
+    
     % Create a stimulusSlewOn vector. This is the rate of change of the
     % stimulus at the time of onset.
     stimulusSlewOn.values= max( [ [diff(stimulus.values) 0]; zeros(1,length(stimulus.timebase)) ] );
     stimulusSlewOn.timebase=stimulus.timebase;
     
-    transientComponent = stimulusSlewOn;
-    sustainedComponent = stimulus;
-    persistentComponent = stimulusSlewOn;
+    LMSTransientComponent = stimulusSlewOn;
+    LMSSustainedComponent = stimulus;
+    LMSPersistentComponent = stimulusSlewOn;
     
+    %%%% MODELING THE LMS RESPONSE
     %% Perform second neural transformation of input
     % Create the gamma kernel for the persistent component
     persistentGammaIRF.values = stimulus.timebase .* exp(-stimulus.timebase./(persistentGammaTauVec(ii)));
     persistentGammaIRF=normalizeKernelArea(persistentGammaIRF);
-
+    
     
     % Create the exponential kernel
-    exponentialIRF.values=exp(-1/exponentialTauVec(ii)*stimulus.timebase);
-    exponentialIRF=normalizeKernelArea(exponentialIRF);
+    LMSExponentialIRF.values=exp(-1/LMSExponentialTauVec(ii)*stimulus.timebase);
+    LMSExponentialIRF=normalizeKernelArea(LMSExponentialIRF);
     
     % Old TPUP implmentation: make persistent component out of stimulusOnset
-    %persistentComponent = obj.applyKernel(persistentComponent,exponentialIRF); 
-
+    %persistentComponent = obj.applyKernel(persistentComponent,exponentialIRF);
+    
     % apply transformation to the persistent component
-    persistentComponent = obj.applyKernel(obj.applyKernel(persistentComponent,exponentialIRF),persistentGammaIRF); % standard: make persistent component out of stimulusOnset
-
+    LMSPersistentComponent = obj.applyKernel(obj.applyKernel(LMSPersistentComponent,LMSExponentialIRF),persistentGammaIRF); % standard: make persistent component out of stimulusOnset
+    
     
     % for this stage, transient and sustained components are merely
     % intended to be convolved by a delta function. This operation returns
@@ -103,27 +120,153 @@ for ii=1:numInstances
     gammaIRF=normalizeKernelArea(gammaIRF);
     
     % apply gamma kernel to each component
-    transientComponent = obj.applyKernel(transientComponent,gammaIRF);
-    sustainedComponent = obj.applyKernel(sustainedComponent,gammaIRF);
-    persistentComponent = obj.applyKernel(persistentComponent,gammaIRF);
-
+    LMSTransientComponent = obj.applyKernel(LMSTransientComponent,gammaIRF);
+    LMSSustainedComponent = obj.applyKernel(LMSSustainedComponent,gammaIRF);
+    LMSPersistentComponent = obj.applyKernel(LMSPersistentComponent,gammaIRF);
+    
     
     %% Scale each component to have unit area
-    transientComponent=normalizeKernelArea(transientComponent);
-    sustainedComponent=normalizeKernelArea(sustainedComponent);
-    persistentComponent=normalizeKernelArea(persistentComponent);
+    LMSTransientComponent=normalizeKernelArea(LMSTransientComponent);
+    LMSSustainedComponent=normalizeKernelArea(LMSSustainedComponent);
+    LMSPersistentComponent=normalizeKernelArea(LMSPersistentComponent);
     
-    yPupil=transientComponent.values * amplitudeTransientVec(ii) + ...
-        sustainedComponent.values * amplitudeSustainedVec(ii) + ...
-        persistentComponent.values * amplitudePersistentVec(ii);
+    LMSPupil=LMSTransientComponent.values * LMSAmplitudeTransientVec(ii) + ...
+        LMSSustainedComponent.values * LMSAmplitudeSustainedVec(ii) + ...
+        LMSPersistentComponent.values * LMSAmplitudePersistentVec(ii);
     
     %% Apply the temporal delay
-    initialValue=yPupil(1);
-    yPupil=fshift(yPupil,-1*delayVec(ii)/deltaT);
-    yPupil(1:ceil(-1*delayVec(ii)/deltaT))=initialValue;
+    initialValue=LMSPupil(1);
+    LMSPupil=fshift(LMSPupil,-1*LMSDelayVec(ii)/deltaT);
+    LMSPupil(1:ceil(-1*LMSDelayVec(ii)/deltaT))=initialValue;
+    
+    
+    %%%% MODELING THE MELANOPSIN RESPONSE
+       %% Perform first neural transformation of input
+    
+    % grab the current stimulus
+    stimulus.values = stimulusStruct.values(ii,:);
+    stimulus.timebase = stimulusStruct.timebase;
+    
+    % Create a stimulusSlewOn vector. This is the rate of change of the
+    % stimulus at the time of onset.
+    stimulusSlewOn.values= max( [ [diff(stimulus.values) 0]; zeros(1,length(stimulus.timebase)) ] );
+    stimulusSlewOn.timebase=stimulus.timebase;
+    
+    MelanopsinTransientComponent = stimulusSlewOn;
+    MelanopsinSustainedComponent = stimulus;
+    MelanopsinPersistentComponent = stimulusSlewOn;
+    
+    %% Perform second neural transformation of input
+    % Create the gamma kernel for the persistent component
+    persistentGammaIRF.values = stimulus.timebase .* exp(-stimulus.timebase./(persistentGammaTauVec(ii)));
+    persistentGammaIRF=normalizeKernelArea(persistentGammaIRF);
+    
+    
+    % Create the exponential kernel
+    MelanopsinExponentialIRF.values=exp(-1/MelanopsinExponentialTauVec(ii)*stimulus.timebase);
+    MelanopsinExponentialIRF=normalizeKernelArea(MelanopsinExponentialIRF);
+    
+    % Old TPUP implmentation: make persistent component out of stimulusOnset
+    %persistentComponent = obj.applyKernel(persistentComponent,exponentialIRF);
+    
+    % apply transformation to the persistent component
+    MelanopsinPersistentComponent = obj.applyKernel(obj.applyKernel(MelanopsinPersistentComponent,MelanopsinExponentialIRF),persistentGammaIRF); % standard: make persistent component out of stimulusOnset
+    
+    
+    % for this stage, transient and sustained components are merely
+    % intended to be convolved by a delta function. This operation returns
+    % the input, so now actual code for this has been implemented.
+    %% Perform motor plant transformtaion of input
+    
+    % Create the gamma kernel for pupil motor
+    gammaIRF.values = stimulus.timebase .* exp(-stimulus.timebase./gammaTauVec(ii));
+    gammaIRF=normalizeKernelArea(gammaIRF);
+    
+    % apply gamma kernel to each component
+    MelanopsinTransientComponent = obj.applyKernel(MelanopsinTransientComponent,gammaIRF);
+    MelanopsinSustainedComponent = obj.applyKernel(MelanopsinSustainedComponent,gammaIRF);
+    MelanopsinPersistentComponent = obj.applyKernel(MelanopsinPersistentComponent,gammaIRF);
+    
+    
+    %% Scale each component to have unit area
+    MelanopsinTransientComponent=normalizeKernelArea(MelanopsinTransientComponent);
+    MelanopsinSustainedComponent=normalizeKernelArea(MelanopsinSustainedComponent);
+    MelanopsinPersistentComponent=normalizeKernelArea(MelanopsinPersistentComponent);
+    
+    MelanopsinPupil=MelanopsinTransientComponent.values * MelanopsinAmplitudeTransientVec(ii) + ...
+        MelanopsinSustainedComponent.values * MelanopsinAmplitudeSustainedVec(ii) + ...
+        MelanopsinPersistentComponent.values * MelanopsinAmplitudePersistentVec(ii);
+    
+    %% Apply the temporal delay
+    initialValue=MelanopsinPupil(1);
+    MelanopsinPupil=fshift(MelanopsinPupil,-1*MelanopsinDelayVec(ii)/deltaT);
+    MelanopsinPupil(1:ceil(-1*MelanopsinDelayVec(ii)/deltaT))=initialValue;
+    
+    
+    %%%% MODELING THE LIGHTFLUX RESPONSE
+        %% Perform first neural transformation of input
+    
+    % grab the current stimulus
+    stimulus.values = stimulusStruct.values(ii,:);
+    stimulus.timebase = stimulusStruct.timebase;
+    
+    % Create a stimulusSlewOn vector. This is the rate of change of the
+    % stimulus at the time of onset.
+    stimulusSlewOn.values= max( [ [diff(stimulus.values) 0]; zeros(1,length(stimulus.timebase)) ] );
+    stimulusSlewOn.timebase=stimulus.timebase;
+    
+    LightFluxTransientComponent = stimulusSlewOn;
+    LightFluxSustainedComponent = stimulus;
+    LightFluxPersistentComponent = stimulusSlewOn;
+    
+    %% Perform second neural transformation of input
+    % Create the gamma kernel for the persistent component
+    persistentGammaIRF.values = stimulus.timebase .* exp(-stimulus.timebase./(persistentGammaTauVec(ii)));
+    persistentGammaIRF=normalizeKernelArea(persistentGammaIRF);
+    
+    
+    % Create the exponential kernel
+    LightFluxExponentialIRF.values=exp(-1/LightFluxExponentialTauVec(ii)*stimulus.timebase);
+    LightFluxExponentialIRF=normalizeKernelArea(LightFluxExponentialIRF);
+    
+    % Old TPUP implmentation: make persistent component out of stimulusOnset
+    %persistentComponent = obj.applyKernel(persistentComponent,exponentialIRF);
+    
+    % apply transformation to the persistent component
+    LightFluxPersistentComponent = obj.applyKernel(obj.applyKernel(LightFluxPersistentComponent,LightFluxExponentialIRF),persistentGammaIRF); % standard: make persistent component out of stimulusOnset
+    
+    
+    % for this stage, transient and sustained components are merely
+    % intended to be convolved by a delta function. This operation returns
+    % the input, so now actual code for this has been implemented.
+    %% Perform motor plant transformtaion of input
+    
+    % Create the gamma kernel for pupil motor
+    gammaIRF.values = stimulus.timebase .* exp(-stimulus.timebase./gammaTauVec(ii));
+    gammaIRF=normalizeKernelArea(gammaIRF);
+    
+    % apply gamma kernel to each component
+    LightFluxTransientComponent = obj.applyKernel(LightFluxTransientComponent,gammaIRF);
+    LightFluxSustainedComponent = obj.applyKernel(LightFluxSustainedComponent,gammaIRF);
+    LightFluxPersistentComponent = obj.applyKernel( LightFluxPersistentComponent,gammaIRF);
+    
+    
+    %% Scale each component to have unit area
+    LightFluxTransientComponent=normalizeKernelArea(LightFluxTransientComponent);
+    LightFluxSustainedComponent=normalizeKernelArea(LightFluxSustainedComponent);
+    LightFluxPersistentComponent=normalizeKernelArea( LightFluxPersistentComponent);
+    
+    LightFluxPupil=LightFluxTransientComponent.values * LightFluxAmplitudeTransientVec(ii) + ...
+        LightFluxSustainedComponent.values *  LightFluxAmplitudeSustainedVec(ii) + ...
+        LightFluxPersistentComponent.values *  LightFluxAmplitudePersistentVec(ii);
+    
+    %% Apply the temporal delay
+    initialValue=LightFluxPupil(1);
+    LightFluxPupil=fshift(LightFluxPupil,-1*LightFluxDelayVec(ii)/deltaT);
+    LightFluxPupil(1:ceil(-1*LightFluxDelayVec(ii)/deltaT))=initialValue;
     
     %% Add this stimulus model to the response matrix
-    responseMatrix(ii,:)=yPupil;
+    responseMatrix(ii,:)=[LMSPupil(1:length(stimulus.timebase)/3), MelanopsinPupil(1:length(stimulus.timebase)/3), LightFluxPupil(1:length(stimulus.timebase)/3)];
     
 end % loop over stimulus instances
 
