@@ -3,7 +3,7 @@ function modelResponseStruct = computeResponse(obj,params,stimulusStruct,kernelS
 %
 % Compute method for the two-component pupil response model.
 %
-% Operates by calling forwardModelTPUP and then the applyKernel tfe method.
+% Operates by calling forwardModelHPUP and then the applyKernel tfe method.
 %
 % Optional key/value pairs
 %   'AddNoise' - true/false (default false).  Add noise to computed
@@ -23,7 +23,7 @@ p.parse(params,stimulusStruct,kernelStruct,varargin{:});
 params = p.Results.params;
 
 %% Compute the forward model
-modelResponseStruct = forwardModelTPUP(obj,params,stimulusStruct);
+modelResponseStruct = forwardModelHPUP(obj,params,stimulusStruct);
 
 % report an iteration has completed
 switch (obj.verbosity)

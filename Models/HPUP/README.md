@@ -1,4 +1,4 @@
-TPUP (three-component pupil) model.
+HPUP (three-component pupil) model.
 
 Models an evoked pupil response with a 6-parameter, 3-component model.
 

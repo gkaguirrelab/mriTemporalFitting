@@ -1,4 +1,4 @@
-function paramStruct = parameterDefinitionTPUP(nInstances, varargin)
+function paramStruct = parameterDefinitionHPUP(nInstances, varargin)
 % paramStruct = paramCreateBDCM(nStimuli)
 %
 % Create a default parameters structure for the three component, six

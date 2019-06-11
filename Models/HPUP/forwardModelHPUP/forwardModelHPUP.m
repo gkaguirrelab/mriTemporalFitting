@@ -1,6 +1,6 @@
-function [modelResponseStruct] = forwardModelTPUP(obj,params,stimulusStruct)
+function [modelResponseStruct] = forwardModelHPUP(obj,params,stimulusStruct)
 
-%% forwardModelTPUP
+%% forwardModelHPUP
 %
 % Models an evoked pupil response with a 6-parameter, 3-component model.
 %
@@ -103,7 +103,7 @@ for ii=1:numInstances
     LMSExponentialIRF.values=exp(-1/LMSExponentialTauVec(ii)*stimulus.timebase);
     LMSExponentialIRF=normalizeKernelArea(LMSExponentialIRF);
     
-    % Old TPUP implmentation: make persistent component out of stimulusOnset
+    % Old HPUP implmentation: make persistent component out of stimulusOnset
     %persistentComponent = obj.applyKernel(persistentComponent,exponentialIRF);
     
     % apply transformation to the persistent component
@@ -166,7 +166,7 @@ for ii=1:numInstances
     MelanopsinExponentialIRF.values=exp(-1/MelanopsinExponentialTauVec(ii)*stimulus.timebase);
     MelanopsinExponentialIRF=normalizeKernelArea(MelanopsinExponentialIRF);
     
-    % Old TPUP implmentation: make persistent component out of stimulusOnset
+    % Old HPUP implmentation: make persistent component out of stimulusOnset
     %persistentComponent = obj.applyKernel(persistentComponent,exponentialIRF);
     
     % apply transformation to the persistent component
@@ -229,7 +229,7 @@ for ii=1:numInstances
     LightFluxExponentialIRF.values=exp(-1/LightFluxExponentialTauVec(ii)*stimulus.timebase);
     LightFluxExponentialIRF=normalizeKernelArea(LightFluxExponentialIRF);
     
-    % Old TPUP implmentation: make persistent component out of stimulusOnset
+    % Old HPUP implmentation: make persistent component out of stimulusOnset
     %persistentComponent = obj.applyKernel(persistentComponent,exponentialIRF);
     
     % apply transformation to the persistent component

@@ -1,7 +1,7 @@
-classdef tfeTPUP < tfe
-% tfeTPUP
+classdef tfeHPUP < tfe
+% tfeHPUP
 %
-%   tfe = tfeTPUP(varargin)
+%   tfe = tfeHPUP(varargin)
 %
 % Two component pupil response model.
 %
@@ -27,7 +27,7 @@ classdef tfeTPUP < tfe
     % function, but we put the class constructor here.  
     methods (Access=public)
         % Constructor
-        function obj = tfeTPUP(varargin)
+        function obj = tfeHPUP(varargin)
             
             % Base class constructor
             obj = obj@tfe(varargin{:});

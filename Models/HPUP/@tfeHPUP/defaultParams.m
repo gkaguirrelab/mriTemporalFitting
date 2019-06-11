@@ -30,7 +30,7 @@ end
 %  needed for the fitting engine.
 
 % Call out to the parameter definition routine for this method
-paramStruct = parameterDefinitionTPUP(nInstances,varargin{:});
+paramStruct = parameterDefinitionHPUP(nInstances,varargin{:});
 
 % Assemble the fields of params
 params.paramNameCell = paramStruct.paramNameCell;
