@@ -1,5 +1,5 @@
-function [modelResponseStruct] = forwardModelDynamicNormalization(obj,params,stimulusStruct)
-%% forwardModelDynamicNormalization
+function [modelResponseStruct] = forwardModelDYNO(obj,params,stimulusStruct)
+%% forwardModelDYNO
 %
 % This function creates a model of neural response given a vector of
 % stimulus input, a vector of time points, and a set of parameters.

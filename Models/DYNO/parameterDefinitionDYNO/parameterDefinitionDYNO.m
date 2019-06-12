@@ -1,7 +1,7 @@
-function paramStruct = parameterDefinitionDynamicNormalization(nInstances, varargin)
-% paramStruct = parameterDefinitionDynamicNormalization(nInstances)
+function paramStruct = parameterDefinitionDYNO(nInstances, varargin)
+% paramStruct = parameterDefinitionDYNO(nInstances)
 %
-% Create a default parameters structure for the DynamicNormalization fMRI modeling.
+% Create a default parameters structure for the DYNO fMRI modeling.
 % This includes default parameters plus lower and upper bounds,
 % as well as a field with parameter names.
 % If passed, the paramMainMtrix (which are the initial values), vlb,
