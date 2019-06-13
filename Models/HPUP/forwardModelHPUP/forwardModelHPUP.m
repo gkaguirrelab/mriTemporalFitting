@@ -65,8 +65,13 @@ deltaT = check(1);
 responseMatrix=zeros(numInstances,length(stimulusStruct.timebase));
 gammaIRF.values = stimulusStruct.timebase .* 0;
 gammaIRF.timebase = stimulusStruct.timebase;
-persistentGammaIRF.values = stimulusStruct.timebase .* 0;
-persistentGammaIRF.timebase = stimulusStruct.timebase;
+
+LMSPersistentGammaIRF.values = stimulusStruct.timebase .* 0;
+LMSPersistentGammaIRF.timebase = stimulusStruct.timebase;
+MelanopsinPersistentGammaIRF.values = stimulusStruct.timebase .* 0;
+MelanopsinPersistentGammaIRF.timebase = stimulusStruct.timebase;
+LightFluxPersistentGammaIRF.values = stimulusStruct.timebase .* 0;
+LightFluxPersistentGammaIRF.timebase = stimulusStruct.timebase;
 
 LMSExponentialIRF.values=stimulusStruct.timebase .* 0;
 LMSExponentialIRF.timebase=stimulusStruct.timebase;
