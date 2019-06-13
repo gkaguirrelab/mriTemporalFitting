@@ -36,17 +36,19 @@ function [modelResponseStruct] = forwardModelHPUP(obj,params,stimulusStruct)
 
 
 gammaTauVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'gammaTau'));
-persistentGammaTauVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'persistentGammaTau'));
+LMSPersistentGammaTauVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'LMSPersistentGammaTau'));
 LMSDelayVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'LMSDelay'));
 LMSExponentialTauVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'LMSExponentialTau')).*1000;
 LMSAmplitudeTransientVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'LMSAmplitudeTransient')).*1000;
 LMSAmplitudeSustainedVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'LMSAmplitudeSustained')).*1000;
 LMSAmplitudePersistentVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'LMSAmplitudePersistent')).*1000;
+MelanopsinPersistentGammaTauVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'MelanopsinPersistentGammaTau'));
 MelanopsinDelayVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'MelanopsinDelay'));
 MelanopsinExponentialTauVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'MelanopsinExponentialTau')).*1000;
 MelanopsinAmplitudeTransientVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'MelanopsinAmplitudeTransient')).*1000;
 MelanopsinAmplitudeSustainedVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'MelanopsinAmplitudeSustained')).*1000;
 MelanopsinAmplitudePersistentVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'MelanopsinAmplitudePersistent')).*1000;
+LightFluxPersistentGammaTauVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'LightFluxPersistentGammaTau'));
 LightFluxDelayVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'LightFluxDelay'));
 LightFluxExponentialTauVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'LightFluxExponentialTau')).*1000;
 LightFluxAmplitudeTransientVec=params.paramMainMatrix(:,strcmp(params.paramNameCell,'LightFluxAmplitudeTransient')).*1000;
@@ -95,8 +97,8 @@ for ii=1:numInstances
     %%%% MODELING THE LMS RESPONSE
     %% Perform second neural transformation of input
     % Create the gamma kernel for the persistent component
-    persistentGammaIRF.values = stimulus.timebase .* exp(-stimulus.timebase./(persistentGammaTauVec(ii)));
-    persistentGammaIRF=normalizeKernelArea(persistentGammaIRF);
+    LMSPersistentGammaIRF.values = stimulus.timebase .* exp(-stimulus.timebase./(LMSPersistentGammaTauVec(ii)));
+    LMSPersistentGammaIRF=normalizeKernelArea(LMSPersistentGammaIRF);
     
     
     % Create the exponential kernel
@@ -107,7 +109,7 @@ for ii=1:numInstances
     %persistentComponent = obj.applyKernel(persistentComponent,exponentialIRF);
     
     % apply transformation to the persistent component
-    LMSPersistentComponent = obj.applyKernel(obj.applyKernel(LMSPersistentComponent,LMSExponentialIRF),persistentGammaIRF); % standard: make persistent component out of stimulusOnset
+    LMSPersistentComponent = obj.applyKernel(obj.applyKernel(LMSPersistentComponent,LMSExponentialIRF),LMSPersistentGammaIRF); % standard: make persistent component out of stimulusOnset
     
     
     % for this stage, transient and sustained components are merely
@@ -158,8 +160,8 @@ for ii=1:numInstances
     
     %% Perform second neural transformation of input
     % Create the gamma kernel for the persistent component
-    persistentGammaIRF.values = stimulus.timebase .* exp(-stimulus.timebase./(persistentGammaTauVec(ii)));
-    persistentGammaIRF=normalizeKernelArea(persistentGammaIRF);
+    MelanopsinPersistentGammaIRF.values = stimulus.timebase .* exp(-stimulus.timebase./(MelanopsinPersistentGammaTauVec(ii)));
+    MelanopsinPersistentGammaIRF=normalizeKernelArea(MelanopsinPersistentGammaIRF);
     
     
     % Create the exponential kernel
@@ -170,7 +172,7 @@ for ii=1:numInstances
     %persistentComponent = obj.applyKernel(persistentComponent,exponentialIRF);
     
     % apply transformation to the persistent component
-    MelanopsinPersistentComponent = obj.applyKernel(obj.applyKernel(MelanopsinPersistentComponent,MelanopsinExponentialIRF),persistentGammaIRF); % standard: make persistent component out of stimulusOnset
+    MelanopsinPersistentComponent = obj.applyKernel(obj.applyKernel(MelanopsinPersistentComponent,MelanopsinExponentialIRF),MelanopsinPersistentGammaIRF); % standard: make persistent component out of stimulusOnset
     
     
     % for this stage, transient and sustained components are merely
@@ -221,8 +223,8 @@ for ii=1:numInstances
     
     %% Perform second neural transformation of input
     % Create the gamma kernel for the persistent component
-    persistentGammaIRF.values = stimulus.timebase .* exp(-stimulus.timebase./(persistentGammaTauVec(ii)));
-    persistentGammaIRF=normalizeKernelArea(persistentGammaIRF);
+    LightFluxPersistentGammaIRF.values = stimulus.timebase .* exp(-stimulus.timebase./(LightFluxPersistentGammaTauVec(ii)));
+    LightFluxPersistentGammaIRF=normalizeKernelArea(LightFluxPersistentGammaIRF);
     
     
     % Create the exponential kernel
@@ -233,7 +235,7 @@ for ii=1:numInstances
     %persistentComponent = obj.applyKernel(persistentComponent,exponentialIRF);
     
     % apply transformation to the persistent component
-    LightFluxPersistentComponent = obj.applyKernel(obj.applyKernel(LightFluxPersistentComponent,LightFluxExponentialIRF),persistentGammaIRF); % standard: make persistent component out of stimulusOnset
+    LightFluxPersistentComponent = obj.applyKernel(obj.applyKernel(LightFluxPersistentComponent,LightFluxExponentialIRF),LightFluxPersistentGammaIRF); % standard: make persistent component out of stimulusOnset
     
     
     % for this stage, transient and sustained components are merely
