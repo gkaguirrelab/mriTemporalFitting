@@ -165,7 +165,7 @@ for ii=1:numInstances
     
     %% Perform second neural transformation of input
     % Create the gamma kernel for the persistent component
-    MelanopsinPersistentGammaIRF.values = stimulus.timebase .* exp(-stimulus.timebase./(MelanopsinPersistentGammaTauVec(ii)));
+    MelanopsinPersistentGammaIRF.values = stimulus.timebase .* exp(-stimulus.timebase./(LMSPersistentGammaTauVec(ii)));
     MelanopsinPersistentGammaIRF=normalizeKernelArea(MelanopsinPersistentGammaIRF);
     
     
@@ -228,7 +228,7 @@ for ii=1:numInstances
     
     %% Perform second neural transformation of input
     % Create the gamma kernel for the persistent component
-    LightFluxPersistentGammaIRF.values = stimulus.timebase .* exp(-stimulus.timebase./(LightFluxPersistentGammaTauVec(ii)));
+    LightFluxPersistentGammaIRF.values = stimulus.timebase .* exp(-stimulus.timebase./(LMSPersistentGammaTauVec(ii)));
     LightFluxPersistentGammaIRF=normalizeKernelArea(LightFluxPersistentGammaIRF);
     
     
