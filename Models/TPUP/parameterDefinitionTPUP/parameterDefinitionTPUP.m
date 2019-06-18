@@ -32,22 +32,22 @@ p.parse(nInstances,varargin{:});
 paramStruct.paramNameCell = {...
     'delay',...
     'gammaTau', ...
+    'persistentGammaTau', ...
     'exponentialTau', ...
     'amplitudeTransient', ...
     'amplitudeSustained', ...
     'amplitudePersistent', ...
-    'persistentGammaTau', ...
     };
 
 % initial values
 if isempty(p.Results.initialValues)
     paramStruct.paramMainMatrix(:,1) = 200.*ones([nInstances 1]);
     paramStruct.paramMainMatrix(:,2) = 200.*ones([nInstances 1]);
-    paramStruct.paramMainMatrix(:,3) = 10.*ones([nInstances 1]);
-    paramStruct.paramMainMatrix(:,4) = -10.*ones([nInstances 1]);
-    paramStruct.paramMainMatrix(:,5) = -25.*ones([nInstances 1]);
+    paramStruct.paramMainMatrix(:,3) = 200.*ones([nInstances 1]);
+    paramStruct.paramMainMatrix(:,4) = 10.*ones([nInstances 1]);
+    paramStruct.paramMainMatrix(:,5) = -10.*ones([nInstances 1]);
     paramStruct.paramMainMatrix(:,6) = -25.*ones([nInstances 1]);
-    paramStruct.paramMainMatrix(:,7) = 200.*ones([nInstances 1]);
+    paramStruct.paramMainMatrix(:,7) = -25.*ones([nInstances 1]);
 
 else % use passed initial values
     for ii=1:length(paramStruct.paramNameCell)
@@ -60,10 +60,10 @@ if isempty(p.Results.vlb)
     paramStruct.vlb(:,1) = repmat(0,[nInstances 1]);
     paramStruct.vlb(:,2) = repmat(100,[nInstances 1]);
     paramStruct.vlb(:,3) = repmat(1,[nInstances 1]);
-    paramStruct.vlb(:,4) = repmat(-2000,[nInstances 1]);
+    paramStruct.vlb(:,4) = repmat(1,[nInstances 1]);
     paramStruct.vlb(:,5) = repmat(-2000,[nInstances 1]);
     paramStruct.vlb(:,6) = repmat(-2000,[nInstances 1]);
-    paramStruct.vlb(:,7) = repmat(1,[nInstances 1]);
+    paramStruct.vlb(:,7) = repmat(-2000,[nInstances 1]);
 
 else % used passed lower bounds
     for ii=1:length(paramStruct.paramNameCell)
@@ -75,11 +75,11 @@ end
 if isempty(p.Results.vub)
     paramStruct.vub(:,1) = repmat(500,[nInstances 1]);
     paramStruct.vub(:,2) = repmat(350,[nInstances 1]);
-    paramStruct.vub(:,3) = repmat(30,[nInstances 1]);
-    paramStruct.vub(:,4) = repmat(0,[nInstances 1]);
+    paramStruct.vub(:,3) = repmat(1000,[nInstances 1]);
+    paramStruct.vub(:,4) = repmat(30,[nInstances 1]);
     paramStruct.vub(:,5) = repmat(0,[nInstances 1]);
     paramStruct.vub(:,6) = repmat(0,[nInstances 1]);
-    paramStruct.vub(:,7) = repmat(1000,[nInstances 1]);
+    paramStruct.vub(:,7) = repmat(0,[nInstances 1]);
 
 else % used passed upper bounds
     for ii=1:length(paramStruct.paramNameCell)
