@@ -34,6 +34,6 @@ end % loop over columns of the stimulus matrix
 
 %% Build the modelResponseStruct to return
 modelResponseStruct.timebase=stimulusStruct.timebase;
-modelResponseStruct.values=sum(responseMatrix,1);
+modelResponseStruct.values=sum(responseMatrix,1) + params.offset;
 
 end % function

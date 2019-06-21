@@ -16,6 +16,7 @@ params = p.Results.params;
 
 % The parameters for search are in the paramMainMatrix field
 x = reshape(params.paramMainMatrix,params.matrixRows*params.matrixCols,1);
+x(end+1) = params.offset;
 obj.paramsBase = params;
 
 % Optional inclusion of noise
